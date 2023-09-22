@@ -1,0 +1,16 @@
+{
+  "name": "shaorma-bot",
+  "version": "1.0.0",
+  "description": "shaorma-bot open-source efforts",
+  "main": "index.js",
+  "scripts": {
+    "bot": "node .",
+    "commands": "node deploy-commands.js"
+  },
+  "author": "shaorma",
+  "license": "CC-BY-NC-SA-4.0",
+  "dependencies": {
+    "discord.js": "^14.13.0",
+    "dotenv": "^16.3.1"
+  }
+}
