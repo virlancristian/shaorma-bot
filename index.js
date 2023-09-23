@@ -28,19 +28,26 @@ client.once(Events.ClientReady, c => {
 	console.log(`Ready! Logged in as ${c.user.tag}`);
 });
 
+/*Modified command.execute function arguments
+Spam's command.execute has 2 arguments and the ping command only 1
+So I created an object that contains both the interaction and client objects that's passed as the argument for the execute function,
+and for every command you can extract what object you need. This also adds extensibility*/ 
+
+//Modified interaction error message to distinguish a follow up and reply error
 client.on(Events.InteractionCreate, async interaction => {
 	if (!interaction.isChatInputCommand()) return;
 
 	const command = client.commands.get(interaction.commandName);
+	const cmdExecComponents = {interaction, client};
 
 	if (!command) return;
 
 	try {
-		await command.execute(interaction);
+		await command.execute(cmdExecComponents);
 	} catch (error) {
 		console.error(error);
 		if (interaction.replied || interaction.deferred) {
-			await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true });
+			await interaction.followUp({ content: 'There was an error while continuing this command!', ephemeral: true });
 		} else {
 			await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
 		}
