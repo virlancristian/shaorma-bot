@@ -11,12 +11,9 @@ module.exports = {
         .addAttachmentOption(option =>
             option.setName('photo')
             .setDescription('-')),
-    async execute(cmdExecComponents) {
-        const interaction = cmdExecComponents.interaction;
-        const client = cmdExecComponents.client;
-
+    async execute(interaction) {
         const spamMessage = getOptionContent(interaction);
-        const channel = client.channels.cache.get(interaction.channelId);
+        const channel = interaction.client.channels.cache.get(interaction.channelId);
 
         await interaction.reply(spamMessage);
 
