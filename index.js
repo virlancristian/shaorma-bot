@@ -3,8 +3,12 @@ const path = require('node:path');
 
 const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
 const { DISCORD_TOKEN } = require('./config.js');
+const verifyMessage = require('./messageInteraction.js');
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+
+
+//Added 2 new intents required for message interaction
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
 
 client.commands = new Collection();
 const foldersPath = path.join(__dirname, 'commands');
@@ -44,6 +48,19 @@ client.on(Events.InteractionCreate, async interaction => {
 			await interaction.followUp({ content: 'There was an error while continuing this command!', ephemeral: true });
 		} else {
 			await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+		}
+	}
+});
+
+client.on(Events.MessageCreate, async message => {
+	const reply = verifyMessage(message);
+	const channel = message.client.channels.cache.get(message.channelId);
+
+	if(reply != null) {
+		try {
+			await channel.send(reply);
+		} catch(error) {
+			console.log(error);
 		}
 	}
 });

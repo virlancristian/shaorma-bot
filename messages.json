@@ -1,0 +1,18 @@
+[
+    {
+        "message": "This is a test message",
+        "reply": "This is a test reply",
+        "user": {
+            "idRequired": false,
+            "id": ""
+        }
+    },
+    {
+        "message": "This is a test message from a required user",
+        "reply": "This is another test reply",
+        "user": {
+            "idRequired": true,
+            "id": "258316651420712960"
+        }
+    }
+]
