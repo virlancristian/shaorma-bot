@@ -3,9 +3,8 @@ const path = require('node:path');
 
 const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
 const { DISCORD_TOKEN } = require('./config.js');
-const verifyMessage = require('./messageInteraction.js');
 
-
+const checkAndReturnSpecialMsg = require('messages/special/special.js');
 
 //Added 2 new intents required for message interaction
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
@@ -59,16 +58,7 @@ client.on(Events.InteractionCreate, async interaction => {
 });
 
 client.on(Events.MessageCreate, async message => {
-	const reply = verifyMessage(message);
-	const channel = message.client.channels.cache.get(message.channelId);
-
-	if(reply != null) {
-		try {
-			await channel.send(reply);
-		} catch(error) {
-			console.log(error);
-		}
-	}
+	checkAndReturnSpecialMsg(message);
 });
 
 client.login(DISCORD_TOKEN);
