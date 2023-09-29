@@ -14,25 +14,29 @@ module.exports = {
                 .setDescription('separate commands with commas')
                 .setRequired(true)),
 	async execute(interaction) {
-        let commitObject = sanitizeInputs(
-            interaction.options.getString('user'),
-            interaction.options.getString('commands'),
-            interaction.member.guild
-        );
-
-        commitObject.commands.forEach(element => {
-            if (element != "all")
-                if (!interaction.client.commands.find(command => command.data.name === element))
-                    commitObject.commands = commitObject.commands.filter((item) => item !== element);
-        });
-
-        if (commitObject.userId instanceof Promise) {
-            commitObject.userId.then(response => {
-                (response) ? commitObject.userId = response.user.id : commitObject.userId = undefined;
+        if (interaction.member.permissions.has('ADMINISTRATOR')) {
+            let commitObject = sanitizeInputs(
+                interaction.options.getString('user'),
+                interaction.options.getString('commands'),
+                interaction.member.guild
+            );
+    
+            commitObject.commands.forEach(element => {
+                if (element != "all")
+                    if (!interaction.client.commands.find(command => command.data.name === element))
+                        commitObject.commands = commitObject.commands.filter((item) => item !== element);
+            });
+    
+            if (commitObject.userId instanceof Promise) {
+                commitObject.userId.then(response => {
+                    (response) ? commitObject.userId = response.user.id : commitObject.userId = undefined;
+                    addToExclusionList(commitObject, interaction);
+                })
+            } else {
                 addToExclusionList(commitObject, interaction);
-            })
+            }
         } else {
-            addToExclusionList(commitObject, interaction);
+            await interaction.reply({ content: 'You do not have permission to use this command.', ephemeral: true });
         }
 	},
 };
