@@ -10,6 +10,8 @@ client.commands = new Collection();
 const foldersPath = path.join(__dirname, 'commands');
 const commandFolders = fs.readdirSync(foldersPath);
 
+const { userisAllowed } = require('helpers/@exclude/check');
+
 for (const folder of commandFolders) {
 	const commandsPath = path.join(foldersPath, folder);
 	const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
@@ -37,7 +39,11 @@ client.on(Events.InteractionCreate, async interaction => {
 	if (!command) return;
 
 	try {
-		await command.execute(interaction);
+		if (userisAllowed(interaction.user.id, interaction.commandName)) {
+			await command.execute(interaction);
+		} else {
+			await interaction.reply({ content: 'You do not have permission to use this command.', ephemeral: true });
+		}
 	} catch (error) {
 		console.error(error);
 		if (interaction.replied || interaction.deferred) {
