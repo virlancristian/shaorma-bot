@@ -1,4 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
+const { getOptionContent } = require('../../node_modules/helpers/@spam/option-content.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -22,12 +23,3 @@ module.exports = {
         }
     },
 };
-
-//If the message option was chosen, return the written message.
-//If the photo option was chosen, return the photo url
-function getOptionContent(interaction) {
-    const photo = interaction.options.getAttachment('photo');
-    const message = interaction.options.getString('message');
-
-    return photo != null ? photo.url : message;
-}

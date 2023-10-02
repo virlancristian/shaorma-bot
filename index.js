@@ -4,8 +4,6 @@ const path = require('node:path');
 const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
 const { DISCORD_TOKEN } = require('./config.js');
 
-const checkAndReturnSpecialMsg = require('messages/special/special.js');
-
 //Added 2 new intents required for message interaction
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
 
@@ -14,6 +12,7 @@ const foldersPath = path.join(__dirname, 'commands');
 const commandFolders = fs.readdirSync(foldersPath);
 
 const { userisAllowed } = require('helpers/@exclude/check');
+const checkAndReturnSpecialMsg = require('helpers/@messages/special');
 
 for (const folder of commandFolders) {
 	const commandsPath = path.join(foldersPath, folder);
