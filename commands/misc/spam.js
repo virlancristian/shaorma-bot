@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
-const { getOptionContent } = require('../../node_modules/helpers/@spam/option-content.js');
+const { getOptionContent } = require('helpers/@spam/option-content.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
