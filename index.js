@@ -4,13 +4,15 @@ const path = require('node:path');
 const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
 const { DISCORD_TOKEN } = require('./config.js');
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+//Added 2 new intents required for message interaction
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
 
 client.commands = new Collection();
 const foldersPath = path.join(__dirname, 'commands');
 const commandFolders = fs.readdirSync(foldersPath);
 
 const { userisAllowed } = require('helpers/@exclude/check');
+const checkAndReturnSpecialMsg = require('helpers/@messages/special');
 
 for (const folder of commandFolders) {
 	const commandsPath = path.join(foldersPath, folder);
@@ -52,6 +54,10 @@ client.on(Events.InteractionCreate, async interaction => {
 			await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
 		}
 	}
+});
+
+client.on(Events.MessageCreate, async message => {
+	checkAndReturnSpecialMsg(message);
 });
 
 client.login(DISCORD_TOKEN);
