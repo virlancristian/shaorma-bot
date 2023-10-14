@@ -4,11 +4,15 @@ const path = require('node:path');
 const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
 const { DISCORD_TOKEN } = require('./config.js');
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+//Added 2 new intents required for message interaction
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
 
 client.commands = new Collection();
 const foldersPath = path.join(__dirname, 'commands');
 const commandFolders = fs.readdirSync(foldersPath);
+
+const { userisAllowed } = require('helpers/@exclude/check');
+const checkAndReturnSpecialMsg = require('helpers/@messages/special');
 
 for (const folder of commandFolders) {
 	const commandsPath = path.join(foldersPath, folder);
@@ -28,6 +32,7 @@ client.once(Events.ClientReady, c => {
 	console.log(`Ready! Logged in as ${c.user.tag}`);
 });
 
+//Modified interaction error message to distinguish a follow up and reply error
 client.on(Events.InteractionCreate, async interaction => {
 	if (!interaction.isChatInputCommand()) return;
 
@@ -36,15 +41,23 @@ client.on(Events.InteractionCreate, async interaction => {
 	if (!command) return;
 
 	try {
-		await command.execute(interaction);
+		if (userisAllowed(interaction.user.id, interaction.commandName)) {
+			await command.execute(interaction);
+		} else {
+			await interaction.reply({ content: 'You do not have permission to use this command.', ephemeral: true });
+		}
 	} catch (error) {
 		console.error(error);
 		if (interaction.replied || interaction.deferred) {
-			await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true });
+			await interaction.followUp({ content: 'There was an error while continuing this command!', ephemeral: true });
 		} else {
 			await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
 		}
 	}
+});
+
+client.on(Events.MessageCreate, async message => {
+	checkAndReturnSpecialMsg(message);
 });
 
 client.login(DISCORD_TOKEN);
